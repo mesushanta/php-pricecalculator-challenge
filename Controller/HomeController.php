@@ -2,12 +2,15 @@
 declare(strict_types = 1);
 
 require_once './Helpers/Database.php';
+require_once './Controller/CalculateController.php';
 
-class HomepageController
+class HomeController
 {
     private $products = [];
     private $customers = [];
     private $groups = [];
+    private $calculate;
+    private $result = false;
 
     /**
      * @param $products
@@ -15,11 +18,19 @@ class HomepageController
      * @param $customers_groups
      */
 
-    public function __construct($products, $customers, $groups)
+    public function __construct()
     {
         $this->products = Database::query('SELECT * FROM product');
         $this->customers = Database::query('SELECT * FROM customer');
-        $this->groups = Database::query('SELECT * FROM cuastomer_group');
+        $this->groups = Database::query('SELECT * FROM customer_group');
+
+        if(isset($_POST) && !empty($_POST)) {
+            $customer_id = $_POST['customer_id'];
+            $group_id = $_POST['group_id'];
+            $product_id = $_POST['product_id'];
+            $this->calculate = new CalculateController($customer_id,$group_id,$product_id);
+            $this->result = true;
+        }
     }
 
 
@@ -31,6 +42,7 @@ class HomepageController
         // then the view will actually display them.
 
         //load the view
+
         require 'View/home.php';
     }
 
@@ -58,6 +70,21 @@ class HomepageController
         return $this->groups;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getCalculate()
+    {
+        return $this->calculate;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isResult(): bool
+    {
+        return $this->result;
+    }
 
 
 

@@ -5,7 +5,6 @@ require_once './Helpers/Database.php';
 class CustomerGroup
 {
     private $table = "customer_group";
-    private $id;
     private $name;
     private $parent_id;
     private $fixed_discount;

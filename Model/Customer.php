@@ -5,12 +5,12 @@ require_once './Helpers/Database.php';
 class Customer
 {
     private $table = "customer";
-    private $id;
     private $firstname;
     private $lastname;
     private $group_id;
     private $fixed_discount;
     private $variable_discount;
+
     /**
      * @param $id
      */

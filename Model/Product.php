@@ -5,8 +5,6 @@ require_once './Helpers/Database.php';
 class Product
 {
     private $table = "product";
-
-    private $id;
     private $name;
     private $price;
 
