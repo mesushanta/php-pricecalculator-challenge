@@ -8,7 +8,7 @@ class HomeController
 {
     private $products = [];
     private $customers = [];
-    private $groups = [];
+    private $group;
     private $calculate;
     private $result = false;
 
@@ -22,15 +22,16 @@ class HomeController
     {
         $this->products = Database::query('SELECT * FROM product');
         $this->customers = Database::query('SELECT * FROM customer');
-        $this->groups = Database::query('SELECT * FROM customer_group');
 
         if(isset($_POST) && !empty($_POST)) {
+
             $customer_id = $_POST['customer_id'];
-            $group_id = $_POST['group_id'];
             $product_id = $_POST['product_id'];
-            $this->calculate = new CalculateController($customer_id,$group_id,$product_id);
+            
+            $this->calculate = new CalculateController($customer_id,$product_id);
             $this->result = true;
         }
+
     }
 
 
@@ -85,6 +86,17 @@ class HomeController
     {
         return $this->result;
     }
+
+    /**
+     * @return array|CustomerGroup
+     */
+    public function getGroup()
+    {
+        return $this->group;
+    }
+
+
+
 
 
 

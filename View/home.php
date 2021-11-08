@@ -13,13 +13,7 @@
                 <?php } ?>
             </select>
         </div>
-        <div class="col-span-2">
-            <select name="group_id" class="w-full px-4 h-12 border border-gray-400">
-                <?php foreach($home->getGroups() as $group) { ?>
-                    <option value="<?php echo $group['id']; ?>"><?php echo $group['name']; ?> (<?php echo $group['fixed_discount']; ?> , <?php echo $group['variable_discount']; ?>)</option>
-                <?php } ?>
-            </select>
-        </div>
+
         <div class="col-span-2">
             <select name="product_id" class="w-full px-4 h-12 border border-gray-400">
                 <?php foreach($home->getProducts() as $product) { ?>

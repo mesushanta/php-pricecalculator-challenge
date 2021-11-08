@@ -10,6 +10,7 @@ class Customer
     private $group_id;
     private $fixed_discount;
     private $variable_discount;
+    private $groupName = "";
 
     /**
      * @param $id
@@ -17,6 +18,7 @@ class Customer
     public function __construct($id)
     {
         $row = Database::query('SELECT * FROM ' . $this->table . ' WHERE id = ' . $id);
+
         $this->firstname = $row[0]['firstname'];
         $this->lastname = $row[0]['lastname'];
         $this->group_id = $row[0]['group_id'];
@@ -62,6 +64,14 @@ class Customer
     public function getVariableDiscount()
     {
         return $this->variable_discount;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGroupName(): string
+    {
+        return $this->groupName;
     }
 
 

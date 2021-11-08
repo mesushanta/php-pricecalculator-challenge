@@ -5,6 +5,7 @@ require_once './Helpers/Database.php';
 class CustomerGroup
 {
     private $table = "customer_group";
+    private $id;
     private $name;
     private $parent_id;
     private $fixed_discount;
@@ -15,6 +16,7 @@ class CustomerGroup
      */
     public function __construct($id)
     {
+        $this->id = $id;
         $row = Database::query('SELECT * FROM ' . $this->table . ' WHERE id = ' . $id);
         $this->name = $row[0]['name'];
         $this->parent_id = $row[0]['parent_id'];
@@ -54,6 +56,12 @@ class CustomerGroup
         return $this->name;
     }
 
-
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
 }
