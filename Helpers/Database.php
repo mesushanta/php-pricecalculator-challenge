@@ -1,6 +1,7 @@
 <?php
 
 require_once 'EnvLoader.php';
+
 class Database
 {
     private static $host = "localhost";

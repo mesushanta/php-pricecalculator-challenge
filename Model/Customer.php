@@ -11,6 +11,7 @@ class Customer
     private $fixed_discount;
     private $variable_discount;
     private $groupName = "";
+    private $email;
 
     /**
      * @param $id
@@ -24,6 +25,7 @@ class Customer
         $this->group_id = $row[0]['group_id'];
         $this->fixed_discount = $row[0]['fixed_discount'];
         $this->variable_discount = $row[0]['variable_discount'];
+        $this->email = $row[0]['email'];
     }
 
     /**
@@ -73,6 +75,15 @@ class Customer
     {
         return $this->groupName;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
 
 
 
