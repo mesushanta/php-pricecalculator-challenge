@@ -21,13 +21,13 @@ class LoginController
         }
     }
 
-    public function doLogin() {
+    private function doLogin() {
         $this->valid = true;
         $email = $_POST['email'];
         $password = $_POST['password'];
 
         if(empty($email)) {
-            $this->errors['email'] = "Please enter your emails";
+            $this->errors['email'] = "Please enter your email";
             $this->valid = false;
         }
         else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -53,6 +53,7 @@ class LoginController
 
         }
         if($this->valid) {
+
             $_SESSION['login'] = 'yes';
             header("Location: ./index.php");
         }
@@ -60,7 +61,6 @@ class LoginController
 
     public function logout() {
         unset($_SESSION['login']);
-//        session_unset('login');
         header("Location: ./login.php");
     }
     public function render(array $GET, array $POST)

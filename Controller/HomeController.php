@@ -29,6 +29,7 @@ class HomeController
             $product_id = $_POST['product_id'];
             
             $this->calculate = new CalculateController($customer_id,$product_id);
+
             $this->result = true;
         }
 

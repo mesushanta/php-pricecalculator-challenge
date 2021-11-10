@@ -12,7 +12,7 @@ class Database
 //    private static
 //    private static
 //    private static
-//    private statics
+//    private static
 
     private static function con() {
 //        $env = new EnvLoader('./.env');

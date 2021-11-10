@@ -6,7 +6,7 @@ class CalculateController
     private $customer;
     private $product;
     private $group;
-    private $discountAmount = 0;
+
 
     /**
      * @param $customer_id
@@ -18,14 +18,16 @@ class CalculateController
         $this->customer = new Customer($customer_id);
         $this->group = new CustomerGroup($this->customer->getGroupId());
         $this->product = new Product($product_id);
+        $this->calculate();
     }
 
-    public function calculate()
+    private function calculate()
     {
         $discountprice = 0;
         $discountPercentage = 0;
 
         $original_price = $this->product->getPrice();
+
         $customer_discount_type = $this->getDiscountType($this->customer);
         $customer_discount_value = $this->getDiscountValue($this->customer);
         $customer_group_discount_type = $this->getDiscountType($this->group);

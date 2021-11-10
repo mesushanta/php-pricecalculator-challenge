@@ -29,7 +29,6 @@
 
 <?php
     if($home->isResult()) {
-        $home->getCalculate()->calculate();
         echo $home->getCalculate()->getCalculatedPrice();
     }
 ?>
