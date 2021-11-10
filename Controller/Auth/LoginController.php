@@ -16,7 +16,7 @@ class LoginController
      */
     public function __construct()
     {
-        if(isset($_POST) && !empty($_POST)) {
+        if(isset($_POST) && !empty($_POST['login'])) {
             $this->doLogin();
         }
     }

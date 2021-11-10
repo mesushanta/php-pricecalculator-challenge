@@ -6,6 +6,8 @@ class CalculateController
     private $customer;
     private $product;
     private $group;
+    private $groupFixedDiscount = 0;
+    private $groupVariableDiscount = 0;
 
 
     /**
@@ -47,43 +49,22 @@ class CalculateController
                 $discountPercentage = $customer_group_discount_value;
             }
         }
-        if (!empty($this->group->getParentId())) {
-            $parent = new CustomerGroup($this->group->getParentId());
-            $parent_group_discount_type = $this->getDiscountType($parent);
-            $parent_group_discount_value = $this->getDiscountValue($parent);
+        $this->getParentDiscount($this->group);
+        $discountprice = $discountprice + $this->groupFixedDiscount;
 
-            if ($parent_group_discount_type == 'fixed') {
-                $discountprice += $parent_group_discount_value;
-
-            } else {
-                if ($discountPercentage < $parent_group_discount_value) {
-                    $discountPercentage = $parent_group_discount_value;
-                }
-            }
-
-            if($parent->getParentId() != NULL) {
-                $parent2 = new CustomerGroup($parent->getParentId());
-                $parent2_group_discount_type = $this->getDiscountType($parent2);
-                $parent2_group_discount_value = $this->getDiscountValue($parent2);
-
-                if($parent2_group_discount_type == 'fixed') {
-                    $discountprice += $parent2_group_discount_value;
-
-                }
-                else {
-                    if($discountPercentage < $parent2_group_discount_value) {
-                        $discountPercentage = $parent2_group_discount_value;
-                    }
-                }
-
-            }
-
+        if($discountPercentage < $this->groupVariableDiscount) {
+            $discountPercentage = $this->groupVariableDiscount;
         }
 
-            $deducted_price = $original_price - $discountprice;
+        $deducted_price = $original_price - $discountprice;
+        if($deducted_price <=0) {
+            $this->calculated_price = 0;
+        }
+        else {
             $this->calculated_price = $deducted_price - $this->calculatePercentage($deducted_price, $discountPercentage);
-
         }
+
+    }
 
     private function getDiscountType($val) {
         if($val->getFixedDiscount() == NULL) {
@@ -94,12 +75,29 @@ class CalculateController
         }
         return $type;
     }
+
+    private function getParentDiscount($var) {
+        if(!empty($var->getParentId())) {
+            $parent = new CustomerGroup($var->getParentId());
+            $parent_group_discount_type = $this->getDiscountType($parent);
+            $parent_group_discount_value = $this->getDiscountValue($parent);
+            if ($parent_group_discount_type == 'fixed') {
+                $this->groupFixedDiscount += $parent_group_discount_value;
+
+            } else {
+                if ($this->groupVariableDiscount < $parent_group_discount_value) {
+                    $this->groupVariableDiscount = $parent_group_discount_value;
+                }
+            }
+            $this->getParentDiscount($parent);
+        }
+    }
     private function getDiscountValue($val) {
         if($val->getFixedDiscount() == NULL) {
             $value = $val->getVariableDiscount();
         }
         else {
-            $value = $val->getFixedDiscount();
+            $value = $val->getFixedDiscount()*100;
         }
         return $value;
     }
