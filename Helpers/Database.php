@@ -1,6 +1,7 @@
 <?php
 
 require_once 'EnvLoader.php';
+
 class Database
 {
     private static $host = "localhost";
@@ -11,7 +12,7 @@ class Database
 //    private static
 //    private static
 //    private static
-//    private statics
+//    private static
 
     private static function con() {
 //        $env = new EnvLoader('./.env');
