@@ -4,7 +4,17 @@
 ?>
 
 <section class="w-full max-w-screen-xl mx-auto my-20">
-
+    <ul class="w-full my-12">
+        <?php foreach($home->getCategories() as $category): ?>
+        <li class="list-none inline-block mr-2">
+            <a href="?category=<?php echo $category['id'] ?>">
+                <button class="mr-2 px-6 h-10 bg-red-400">
+                    <?php echo $category['name'] ?>
+                </button>
+            </a>
+        </li>
+<?php endforeach; ?>
+    </ul>
     <form class="grid grid-cols-7 gap-4" method="post">
         <div class="col-span-2">
             <select name="customer_id" class="w-full px-4 h-12 border border-gray-400">

@@ -20,9 +20,14 @@ class HomeController
 
     public function __construct()
     {
-        $this->products = Database::query('SELECT id,name FROM product ORDER BY name');
+        if(isset($_GET['category']) && $_GET['category'] > 1 && $_GET['category'] <= 7) {
+            $this->products = Database::query('SELECT id,name FROM product WHERE category_id = ' . $_GET['category'] . ' ORDER BY name');
+        }
+        else {
+            $this->products = Database::query('SELECT id,name FROM product ORDER BY name');
+        }
         $this->customers = Database::query('SELECT id,firstname,lastname FROM customer ORDER BY firstName');
-
+        $this->categories = Database::query('SELECT * FROM category ORDER BY name');
         if(isset($_POST) && !empty($_POST['calculate'])) {
 
             $this->calculate = new CalculateController($_POST['customer_id'],$_POST['product_id'],$_POST['quantity'] );
@@ -91,6 +96,14 @@ class HomeController
     public function getGroup()
     {
         return $this->group;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCategories()
+    {
+        return $this->categories;
     }
 
 
