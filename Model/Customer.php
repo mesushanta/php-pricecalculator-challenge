@@ -84,7 +84,24 @@ class Customer
         return $this->email;
     }
 
+    public function getDiscountType() {
+        if($this->fixed_discount == NULL) {
+            $type = 'variable';
+        }
+        else {
+            $type = 'fixed';
+        }
+        return $type;
+    }
 
-
+    public function getDiscountValue() {
+        if($this->fixed_discount == NULL) {
+            $value = $this->variable_discount;
+        }
+        else {
+            $value = $this->fixed_discount * 100;
+        }
+        return $value;
+    }
 
 }

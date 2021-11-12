@@ -1,10 +1,6 @@
 <?php
 declare(strict_types=1);
-session_start();
 
-if(isset($_SESSION['login']) && $_SESSION['login'] == 'yes') {
-    header("Location: ./index.php");
-}
 require 'Controller/Auth/LoginController.php';
 
 $controller = new LoginController();

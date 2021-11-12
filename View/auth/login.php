@@ -1,5 +1,9 @@
-<?php require './View/includes/header.php'?>
-
+<?php
+    require './View/includes/header.php';
+    if(isset($_SESSION['login']) && $_SESSION['login'] == 'yes') {
+        header("Location: ./index.php");
+    }
+?>
     <section class="w-full mx-auto px-4 my-20 max-w-screen-md">
         LOGIN
         <?php

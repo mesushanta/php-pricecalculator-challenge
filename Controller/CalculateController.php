@@ -6,8 +6,12 @@ class CalculateController
     private $customer;
     private $product;
     private $group;
-    private $groupFixedDiscount = 0;
-    private $groupVariableDiscount = 0;
+    private $quantity;
+    private $unit_price;
+    private $totalFixedDiscount = 0;
+    private $totalVariableDiscount = 0;
+    private $parentLevel = 0;
+    private $parentLevelArray = [];
 
 
     /**
@@ -15,91 +19,76 @@ class CalculateController
      * @param $group_id
      * @param $product_id
      */
-    public function __construct($customer_id,$product_id)
+    public function __construct($customer_id,$product_id,$quantity = 1)
     {
         $this->customer = new Customer($customer_id);
         $this->group = new CustomerGroup($this->customer->getGroupId());
         $this->product = new Product($product_id);
+        $this->quantity = $quantity;
         $this->calculate();
     }
 
     private function calculate()
     {
-        $discountprice = 0;
-        $discountPercentage = 0;
+        $this->unit_price = $this->product->getPrice();
+        if($this->quantity >= 50 && $this->quantity <=99 ) {
+            // 1% discount
+            $this->unit_price = $this->unit_price * 0.99;
+        }
+        if($this->quantity > 99) {
+            // 2% discount
+            $this->unit_price = $this->unit_price * 0.98;
+        }
 
-        $original_price = $this->product->getPrice();
 
-        $customer_discount_type = $this->getDiscountType($this->customer);
-        $customer_discount_value = $this->getDiscountValue($this->customer);
-        $customer_group_discount_type = $this->getDiscountType($this->group);
-        $customer_group_discount_value = $this->getDiscountValue($this->group);
+        $customer_discount_type = $this->customer->getDiscountType();
+        $customer_discount_value = $this->customer->getDiscountValue();
+        $customer_group_discount_type = $this->group->getDiscountType();
+        $customer_group_discount_value = $this->group->getDiscountValue();
 
         if ($customer_discount_type == 'fixed') {
-            $discountprice += $customer_discount_value;
+            $this->totalFixedDiscount += $customer_discount_value;
         } else {
-            if ($discountPercentage < $customer_discount_value) {
-                $discountPercentage = $customer_discount_value;
+            if ($this->totalVariableDiscount < $customer_discount_value) {
+                $this->totalVariableDiscount = $customer_discount_value;
             }
         }
         if ($customer_group_discount_type == 'fixed') {
-            $discountprice += $customer_group_discount_value;
+            $this->totalFixedDiscount += $customer_group_discount_value;
         } else {
-            if ($discountPercentage < $customer_group_discount_value) {
-                $discountPercentage = $customer_group_discount_value;
+            if ($this->totalVariableDiscount < $customer_group_discount_value) {
+                $this->totalVariableDiscount = $customer_group_discount_value;
             }
         }
         $this->getParentDiscount($this->group);
-        $discountprice = $discountprice + $this->groupFixedDiscount;
 
-        if($discountPercentage < $this->groupVariableDiscount) {
-            $discountPercentage = $this->groupVariableDiscount;
-        }
-
-        $deducted_price = $original_price - $discountprice;
-        if($deducted_price <=0) {
+        $this->calculated_price = $this->unit_price - $this->totalFixedDiscount;
+        if($this->calculated_price <=0) {
             $this->calculated_price = 0;
         }
         else {
-            $this->calculated_price = $deducted_price - $this->calculatePercentage($deducted_price, $discountPercentage);
+            $this->calculated_price = $this->calculated_price - $this->calculatePercentage($this->calculated_price, $this->totalVariableDiscount);
         }
 
-    }
-
-    private function getDiscountType($val) {
-        if($val->getFixedDiscount() == NULL) {
-            $type = 'variable';
-        }
-        else {
-            $type = 'fixed';
-        }
-        return $type;
     }
 
     private function getParentDiscount($var) {
         if(!empty($var->getParentId())) {
             $parent = new CustomerGroup($var->getParentId());
-            $parent_group_discount_type = $this->getDiscountType($parent);
-            $parent_group_discount_value = $this->getDiscountValue($parent);
+            $parent_group_discount_type = $parent->getDiscountType();
+            $parent_group_discount_value = $parent->getDiscountValue();
             if ($parent_group_discount_type == 'fixed') {
-                $this->groupFixedDiscount += $parent_group_discount_value;
+                $this->totalFixedDiscount += $parent_group_discount_value;
 
             } else {
-                if ($this->groupVariableDiscount < $parent_group_discount_value) {
-                    $this->groupVariableDiscount = $parent_group_discount_value;
+                if ($this->totalVariableDiscount < $parent_group_discount_value) {
+                    $this->totalVariableDiscount = $parent_group_discount_value;
                 }
             }
+            array_push($this->parentLevelArray,$var->getParentId());
+            $this->parentLevel ++;
             $this->getParentDiscount($parent);
         }
-    }
-    private function getDiscountValue($val) {
-        if($val->getFixedDiscount() == NULL) {
-            $value = $val->getVariableDiscount();
-        }
-        else {
-            $value = $val->getFixedDiscount()*100;
-        }
-        return $value;
     }
 
     private function calculatePercentage($value,$per) {
@@ -111,7 +100,56 @@ class CalculateController
      */
     public function getCalculatedPrice()
     {
-        return $this->calculated_price;
+        return $this->calculated_price * $this->quantity;
     }
+
+    /**
+     * @return Customer
+     */
+    public function getCustomer()
+    {
+        return $this->customer;
+    }
+
+    /**
+     * @return Product
+     */
+    public function getProduct()
+    {
+        return $this->product;
+    }
+
+    /**
+     * @return CustomerGroup
+     */
+    public function getGroup()
+    {
+        return $this->group;
+    }
+
+    /**
+     * @return int
+     */
+    public function getParentLevel()
+    {
+        return $this->parentLevel;
+    }
+
+    /**
+     * @return array
+     */
+    public function getParentLevelArray()
+    {
+        return $this->parentLevelArray;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUnitPrice()
+    {
+        return $this->unit_price;
+    }
+
 
 }

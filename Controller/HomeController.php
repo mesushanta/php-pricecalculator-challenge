@@ -20,15 +20,12 @@ class HomeController
 
     public function __construct()
     {
-        $this->products = Database::query('SELECT id,name FROM product');
-        $this->customers = Database::query('SELECT id,firstname,lastname FROM customer');
+        $this->products = Database::query('SELECT id,name FROM product ORDER BY name');
+        $this->customers = Database::query('SELECT id,firstname,lastname FROM customer ORDER BY firstName');
 
         if(isset($_POST) && !empty($_POST['calculate'])) {
 
-            $customer_id = $_POST['customer_id'];
-            $product_id = $_POST['product_id'];
-            
-            $this->calculate = new CalculateController($customer_id,$product_id);
+            $this->calculate = new CalculateController($_POST['customer_id'],$_POST['product_id'],$_POST['quantity'] );
 
             $this->result = true;
         }
